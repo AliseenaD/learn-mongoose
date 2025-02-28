@@ -36,6 +36,7 @@ export interface IBook extends Document {
 interface IBookModel extends Model<IBook> {
   getAllBooksWithAuthors(projectionOpts: string, sortOpts?: { [key: string]: 1 | -1 }): Promise<IBook[]>;
   getBookCount(fitler?: FilterQuery<IBook>): Promise<number>;
+  getBook(id: string): Promise<IBook | null>;
 }
 
 /**
@@ -72,6 +73,17 @@ BookSchema.statics.getAllBooksWithAuthors = async function (projection: string, 
     .populate('author');
   }
   return Book.find({}, projection).populate('author');
+}
+
+/**
+ * The function to get a book by ID.
+ * It uses the mongoose query to find a book by ID
+ * and populates the author and genre fields.
+ * @param id of a book
+ * @returns a promise of the book or null.
+ */
+BookSchema.statics.getBook = async function (id: string): Promise<IBook | null> {
+  return this.findById(id).populate('author').populate('genre').exec();
 }
 
 /**
